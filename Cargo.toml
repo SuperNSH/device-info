@@ -1,0 +1,10 @@
+[package]
+name = "nsh-device-info"
+version = "0.0.1"
+edition = "2024"
+license = "MIT"
+description = "Device model, OS version and app version for Native Shell apps."
+repository = "https://github.com/SuperNSH/device-info"
+publish = false
+
+[dependencies]
