@@ -1,0 +1,52 @@
+[package]
+name = "nsh-device-info"
+description = "Device model, OS version and app version for Native Shell apps: the raw model identifier, the OS's own numbers and the app's build metadata, on iOS, Android, macOS, Windows, Linux and the web"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[lib]
+name = "nsh_device_info"
+path = "src/lib.rs"
+
+[dependencies]
+nsh-core = "0.4.0"
+thiserror = "2.0.21"
+
+# Desktop: os_info reads the OS version on the three desktop targets.
+[target.'cfg(any(target_os = "macos", target_os = "windows", target_os = "linux"))'.dependencies]
+os_info = "3.15.0"
+
+# Apple: NSBundle for the app's metadata, libc for sysctl's hw.model. Defaults stay on:
+# NSBundle+NSString alone leave the crate without std/alloc, which String reads need.
+[target.'cfg(target_vendor = "apple")'.dependencies]
+objc2-foundation = { version = "0.3.2", features = ["NSBundle", "NSString"] }
+libc = "0.2.191"
+
+# iOS: UIDevice reports the system version.
+[target.'cfg(target_os = "ios")'.dependencies]
+objc2-ui-kit = { version = "0.3.2", features = ["UIDevice"] }
+
+# Android: android.os.Build and PackageManager over JNI. ndk-context carries the VM.
+[target.'cfg(target_os = "android")'.dependencies]
+jni = "0.22.4"
+ndk-context = "0.1.1"
+
+# Windows: the DMI product name from the registry, the exe's version resource.
+[target.'cfg(target_os = "windows")'.dependencies]
+windows = { version = "0.62.2", features = ["Win32_System_Registry", "Win32_Storage_FileSystem"] }
+
+# Web: navigator.userAgentData via js-sys Reflect — web-sys ships the UA-CH types only behind
+# unstable APIs no NSH build passes — so web-sys carries Window and Navigator alone.
+# wasm-bindgen-futures is pinned 0.4, not 0.2, per docs/decisions.md.
+[target.'cfg(target_family = "wasm")'.dependencies]
+web-sys = { version = "0.3.107", features = ["Navigator", "Window"] }
+js-sys = "0.3.107"
+wasm-bindgen = "0.2.130"
+wasm-bindgen-futures = "0.4.80"
+
+[dev-dependencies]
+# Integration tests poll the futures; rt + macros is all #[tokio::test] needs.
+tokio = { version = "1.54.1", default-features = false, features = ["rt", "macros"] }

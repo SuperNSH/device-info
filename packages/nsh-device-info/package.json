@@ -1,0 +1,18 @@
+{
+  "name": "nsh-device-info",
+  "version": "0.1.0",
+  "description": "Device model, OS version and app version for Native Shell TSX apps, with device_info_plus's names",
+  "license": "MIT",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./rust": "./src/rust.ts",
+    "./memory": "./src/memory.ts"
+  },
+  "files": [
+    "src"
+  ],
+  "repository": "https://github.com/SuperNSH/device-info"
+}

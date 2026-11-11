@@ -1,0 +1,8 @@
+{
+  "name": "nsh-device-info tests",
+  "id": "dev.supernsh.deviceinfo.tests",
+  "version": "0.1.0",
+  "build": 1,
+  "rust": "../../crates/nsh-device-info",
+  "capabilities": {}
+}
