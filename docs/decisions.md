@@ -2,9 +2,9 @@
 
 Each entry says what was chosen and why. [goals.md](goals.md) states the acceptance criteria; [parity.md](parity.md) lists what each reference API does on each platform. The three items this file opened with — the NSH version, the library choice, the platforms in scope — are decided below.
 
-## NSH 0.4.0 is the pinned version
+## NSH 0.5.0 is the pinned version
 
-This repo's brief names no NSH version; the pin comes from the SuperNSH set's brief ("NSH crates are `0.4.0`", `.refs/biometrics/docs/brief.md`), whose research notes this repo's brief defers to. The library stays on the released crate: `nsh-core = "0.4.0"` from crates.io, the version CI installs and the version SuperNSH/biometrics pins. Nothing here needs the unreleased `main` branch: the reads need no manifest key and no permission — `utsname`, `UIDevice` and `NSBundle` on Apple, `android.os.Build` and the package manager on Android, an `HKLM` registry read on Windows, the DMI files under `/sys` on Linux, UA-CH in the browser. The `ios.infoPlist` trouble biometrics hit does not apply.
+This repo's brief names no NSH version; the pin comes from the SuperNSH set's brief ("NSH crates are `0.4.0`", `.refs/biometrics/docs/brief.md`), whose research notes this repo's brief defers to. The library stays on the released crate: it started on `nsh-core = "0.4.0"`, the version SuperNSH/biometrics pinned, and moved to `nsh-core = "0.5.0"` from crates.io, the version CI installs, with the SuperNSH set on 2026-11-11. Nothing here needs the unreleased `main` branch: the reads need no manifest key and no permission — `utsname`, `UIDevice` and `NSBundle` on Apple, `android.os.Build` and the package manager on Android, an `HKLM` registry read on Windows, the DMI files under `/sys` on Linux, UA-CH in the browser. The `ios.infoPlist` trouble biometrics hit does not apply.
 
 ## os_info 3 for the desktop version, native APIs for the model
 
@@ -50,14 +50,14 @@ That is every failure the library can meet. There are no arguments to refuse (no
 
 ## App info on web and desktop Linux: named gaps
 
-- Web: the browser has no bundle. package_info_plus answers from a `version.json` its build generates and the app fetches; NSH 0.4.0 generates no such artifact. `app_info` resolves `ERR_DEVICE_INFO_NOT_AVAILABLE`; an app ships its own constants today. A later version needs the NSH build to emit a version artifact, and a reader for it.
+- Web: the browser has no bundle. package_info_plus answers from a `version.json` its build generates and the app fetches; NSH 0.4.0 generates no such artifact (0.5.0's TypeScript `appInfo()` reads build metadata on the web; the Rust crate does not use it yet). `app_info` resolves `ERR_DEVICE_INFO_NOT_AVAILABLE`; an app ships its own constants today. A later version needs the NSH build to emit a version artifact, and a reader for it.
 - Desktop Linux: no bundle, and no package manager owns an exe in `/usr/local`. A later version needs a build-time source — NSH injecting the app's metadata at packaging, or parsing the `.desktop` file the installer ships.
 
 Model and OS version work on both; only app info is the gap. Both rows are Partial in [parity.md](parity.md).
 
 ## Versions
 
-Each direct dependency is the newest stable release confirmed on crates.io at implementation time; `crates/nsh-device-info/Cargo.toml` is the record. The lines the code needs: nsh-core 0.4.0, thiserror 2, os_info 3 on the desktop targets, objc2-foundation 0.3 and libc on Apple, objc2-ui-kit 0.3 on iOS, jni 0.22 and ndk-context 0.1 on Android, windows 0.62 on Windows, web-sys 0.3 / js-sys 0.3 / wasm-bindgen 0.2 / wasm-bindgen-futures 0.4 on wasm — 0.4, not 0.2, because the futures crate's 0.2 series is unbuildable here (0.2.22 predates `JsFuture` and hard-depends on js-sys 0.2 / futures 0.1), and 0.4 is the lockstep series of the wasm-bindgen 0.2 / js-sys 0.3 pins. web-sys itself ships only `Navigator` and `Window`: its UA-CH types are gated behind `--cfg=web_sys_unstable_apis`, which no NSH build passes, so `platform/web.rs` reaches `navigator.userAgentData` through js-sys `Reflect`.
+Each direct dependency is the newest stable release confirmed on crates.io at implementation time; `crates/nsh-device-info/Cargo.toml` is the record. The lines the code needs: nsh-core 0.5.0, thiserror 2, os_info 3 on the desktop targets, objc2-foundation 0.3 and libc on Apple, objc2-ui-kit 0.3 on iOS, jni 0.22 and ndk-context 0.1 on Android, windows 0.62 on Windows, web-sys 0.3 / js-sys 0.3 / wasm-bindgen 0.2 / wasm-bindgen-futures 0.4 on wasm — 0.4, not 0.2, because the futures crate's 0.2 series is unbuildable here (0.2.22 predates `JsFuture` and hard-depends on js-sys 0.2 / futures 0.1), and 0.4 is the lockstep series of the wasm-bindgen 0.2 / js-sys 0.3 pins. web-sys itself ships only `Navigator` and `Window`: its UA-CH types are gated behind `--cfg=web_sys_unstable_apis`, which no NSH build passes, so `platform/web.rs` reaches `navigator.userAgentData` through js-sys `Reflect`.
 
 ## References
 
