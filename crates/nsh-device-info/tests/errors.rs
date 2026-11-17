@@ -28,7 +28,11 @@ fn every_kind_maps_to_its_stable_code() {
     for (kind, code, message) in kinds {
         let error = DeviceInfoError::new(kind);
         assert_eq!(error.code(), code, "each kind carries its stable code");
-        assert_eq!(error.to_string(), message, "Display shows the kind's own sentence");
+        assert_eq!(
+            error.to_string(),
+            message,
+            "Display shows the kind's own sentence"
+        );
     }
 }
 
@@ -71,6 +75,10 @@ async fn a_platform_failure_carries_the_backend_code_and_status() {
             "a platform failure stays a backend failure"
         );
         assert_eq!(error.code(), "ERR_DEVICE_INFO_BACKEND");
-        assert_eq!(error.status(), Some(-2), "the platform's own status survives the trip");
+        assert_eq!(
+            error.status(),
+            Some(-2),
+            "the platform's own status survives the trip"
+        );
     }
 }

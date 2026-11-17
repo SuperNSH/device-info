@@ -38,7 +38,11 @@ async fn each_call_reads_the_backend_again() {
     let app = answered(info.app_info().await, "app_info");
     assert_eq!(app.version, "1.0.0");
     assert_eq!(
-        (mock.model_reads(), mock.os_version_reads(), mock.app_info_reads()),
+        (
+            mock.model_reads(),
+            mock.os_version_reads(),
+            mock.app_info_reads()
+        ),
         (1, 1, 1),
         "one backend read per call so far"
     );
@@ -71,7 +75,11 @@ async fn each_call_reads_the_backend_again() {
     assert_eq!(app.version, "1.1.0");
     assert_eq!(app.build_number, "2");
     assert_eq!(
-        (mock.model_reads(), mock.os_version_reads(), mock.app_info_reads()),
+        (
+            mock.model_reads(),
+            mock.os_version_reads(),
+            mock.app_info_reads()
+        ),
         (2, 2, 2),
         "every call read its backend again"
     );
@@ -92,7 +100,10 @@ async fn model_keeps_the_raw_identifier() {
         Some("iPhone16,2"),
         "the raw platform identifier reaches the caller verbatim"
     );
-    assert!(model.name.is_none(), "a platform that gives no name gets None");
+    assert!(
+        model.name.is_none(),
+        "a platform that gives no name gets None"
+    );
 
     mock.set_device_model(Ok(Model {
         identifier: Some("SM-S928B".to_owned()),
@@ -139,8 +150,14 @@ async fn partial_data_is_none_not_an_error() {
     let os = answered(info.os_version().await, "os_version");
     assert!(os.full.is_none(), "a missing full version is None");
     let app = answered(info.app_info().await, "app_info");
-    assert!(app.build_signature.is_none(), "an unreadable signature is None");
-    assert!(app.installer_store.is_none(), "an absent installer store is None");
+    assert!(
+        app.build_signature.is_none(),
+        "an unreadable signature is None"
+    );
+    assert!(
+        app.installer_store.is_none(),
+        "an absent installer store is None"
+    );
 }
 
 #[tokio::test]
@@ -179,7 +196,11 @@ async fn the_facade_passes_through_to_its_backend() {
     assert_eq!(app.build_signature.as_deref(), Some("a1b2c3"));
     assert_eq!(app.installer_store.as_deref(), Some("App Store"));
     assert_eq!(
-        (mock.model_reads(), mock.os_version_reads(), mock.app_info_reads()),
+        (
+            mock.model_reads(),
+            mock.os_version_reads(),
+            mock.app_info_reads()
+        ),
         (1, 1, 1),
         "a pass-through reads each backend query exactly once"
     );

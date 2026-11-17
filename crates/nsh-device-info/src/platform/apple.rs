@@ -8,7 +8,7 @@
 //! ERR_DEVICE_INFO_NOT_AVAILABLE, while a single missing key reads as the empty string —
 //! package_info_plus's behavior. Every read is synchronous and nothing is cached.
 
-use std::future::future;
+use std::future;
 
 use crate::{
     backend::{Backend, BackendFuture},
@@ -84,15 +84,18 @@ fn read_os_version() -> Result<OsVersion, DeviceInfoError> {
 fn io_model() -> Result<Model, DeviceInfoError> {
     // SAFETY: an all-zero utsname is a valid buffer; nothing reads it before uname does.
     let mut un: libc::utsname = unsafe { std::mem::zeroed() };
-    // libc declares uname safe; the valid-buffer contract above is this side's to keep.
-    let named = libc::uname(&mut un) == 0;
+    // SAFETY: `un` is a live, writable utsname that uname fills in place.
+    let named = unsafe { libc::uname(&mut un) } == 0;
     if !named {
         return Err(DeviceInfoError::new(ErrorKind::Backend).with_status(errno_status()));
     }
     let machine = c_string(&un.machine);
     // An empty machine string is missing data (None), never an error. UIKit offers no
     // machine of its own — its `model` only says "iPhone" — so name stays None in v0.1.
-    Ok(Model { identifier: (!machine.is_empty()).then_some(machine), name: None })
+    Ok(Model {
+        identifier: (!machine.is_empty()).then_some(machine),
+        name: None,
+    })
 }
 
 #[cfg(target_os = "ios")]
@@ -123,7 +126,11 @@ fn operating_system_version(system_version: &str) -> Option<OsVersion> {
     } else {
         format!("{major}.{minor}.{patch}")
     };
-    Some(OsVersion { major, minor, full: Some(full) })
+    Some(OsVersion {
+        major,
+        minor,
+        full: Some(full),
+    })
 }
 
 /// The one sysctl name this bridge asks for: the hardware model, not the arch.
@@ -147,21 +154,26 @@ fn mac_model() -> Result<Model, DeviceInfoError> {
     };
     let mut model: [libc::c_char; 64] = [0; 64];
     let mut len = model.len();
-    // libc declares sysctl safe; `mib` and `model` stay live and sized on this side, and
-    // hw.model is a read-only string sysctl with no side effects.
-    let status = libc::sysctl(
-        mib.as_mut_ptr(),
-        mib.len() as libc::c_uint,
-        model.as_mut_ptr().cast(),
-        &mut len,
-        std::ptr::null_mut(),
-        0,
-    );
+    // SAFETY: `mib` and `model` stay live and `len` is `model`'s size, so sysctl writes in
+    // bounds; hw.model is a read-only string sysctl with no side effects.
+    let status = unsafe {
+        libc::sysctl(
+            mib.as_mut_ptr(),
+            mib.len() as libc::c_uint,
+            model.as_mut_ptr().cast(),
+            &mut len,
+            std::ptr::null_mut(),
+            0,
+        )
+    };
     if status != 0 {
         return Err(DeviceInfoError::new(ErrorKind::Backend).with_status(errno_status()));
     }
     let model = c_string(&model);
-    Ok(Model { identifier: (!model.is_empty()).then_some(model), name: None })
+    Ok(Model {
+        identifier: (!model.is_empty()).then_some(model),
+        name: None,
+    })
 }
 
 /// NSBundle's release keys, spelled exactly as Apple's bundles spell them.
@@ -244,7 +256,10 @@ mod tests {
 
     #[test]
     fn the_sysctl_name_resolves_to_the_hw_model_mib() {
-        assert_eq!(sysctl_mib(HW_MODEL_SYSCTL), Some([libc::CTL_HW, libc::HW_MODEL]));
+        assert_eq!(
+            sysctl_mib(HW_MODEL_SYSCTL),
+            Some([libc::CTL_HW, libc::HW_MODEL])
+        );
         assert_eq!(sysctl_mib("hw.machine"), None);
         assert_eq!(sysctl_mib("kern.ostype"), None);
     }
@@ -254,12 +269,18 @@ mod tests {
         let version = operating_system_version("18.1");
         assert_eq!(version.as_ref().map(|v| v.major), Some(18));
         assert_eq!(version.as_ref().map(|v| v.minor), Some(1));
-        assert_eq!(version.as_ref().and_then(|v| v.full.as_deref()), Some("18.1"));
+        assert_eq!(
+            version.as_ref().and_then(|v| v.full.as_deref()),
+            Some("18.1")
+        );
 
         let patched = operating_system_version("18.1.2");
         assert_eq!(patched.as_ref().map(|v| v.major), Some(18));
         assert_eq!(patched.as_ref().map(|v| v.minor), Some(1));
-        assert_eq!(patched.as_ref().and_then(|v| v.full.as_deref()), Some("18.1.2"));
+        assert_eq!(
+            patched.as_ref().and_then(|v| v.full.as_deref()),
+            Some("18.1.2")
+        );
 
         assert!(operating_system_version("").is_none());
         assert!(operating_system_version("eighteen").is_none());

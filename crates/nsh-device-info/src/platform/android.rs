@@ -224,7 +224,7 @@ fn optional<R>(
 
 /// A Java String's contents as UTF-8.
 fn java_string(env: &mut Env<'_>, value: JObject<'_>) -> jni::errors::Result<String> {
-    Ok(JString::cast_local(env, value)?.try_to_string(env)?)
+    JString::cast_local(env, value)?.try_to_string(env)
 }
 
 /// An optional Java String: None for a null reference.
@@ -284,7 +284,12 @@ fn os_version(env: &mut Env<'_>) -> Result<OsVersion, DeviceInfoError> {
 fn version_code(env: &mut Env<'_>, info: &JObject<'_>) -> Result<String, DeviceInfoError> {
     if sdk_int(env)? >= SDK_P {
         Ok(env
-            .call_method(info, JNIString::new(LONG_VERSION_CODE), jni_sig!("()J"), &[])?
+            .call_method(
+                info,
+                JNIString::new(LONG_VERSION_CODE),
+                jni_sig!("()J"),
+                &[],
+            )?
             .j()?
             .to_string())
     } else {
@@ -323,7 +328,12 @@ fn load_label(
         return Ok(String::new());
     }
     let text: JObject<'_> = env
-        .call_method(&label, JNIString::new(TO_STRING), jni_sig!("()Ljava/lang/String;"), &[])?
+        .call_method(
+            &label,
+            JNIString::new(TO_STRING),
+            jni_sig!("()Ljava/lang/String;"),
+            &[],
+        )?
         .l()?;
     required_string(env, text)
 }
@@ -431,7 +441,7 @@ fn certificate_bytes(
             env.get_field(
                 &info,
                 JNIString::new(SIGNATURES_FIELD),
-                jni_sig!("()[Landroid/content/pm/Signature;"),
+                jni_sig!("[Landroid/content/pm/Signature;"),
             )?
             .l()?
         };
@@ -442,7 +452,12 @@ fn certificate_bytes(
         // An empty array answers IndexOutOfBounds, which the optional read folds into None.
         let certificate = certificates.get_element(env, 0)?;
         let bytes: JObject<'_> = env
-            .call_method(&certificate, JNIString::new(TO_BYTE_ARRAY), jni_sig!("()[B"), &[])?
+            .call_method(
+                &certificate,
+                JNIString::new(TO_BYTE_ARRAY),
+                jni_sig!("()[B"),
+                &[],
+            )?
             .l()?;
         if bytes.is_null() {
             return Err(jni::errors::Error::NullPtr(TO_BYTE_ARRAY));
@@ -519,7 +534,11 @@ fn app_info(env: &mut Env<'_>, context: &JObject<'_>) -> Result<AppInfo, DeviceI
         )?
         .l()?;
     let version_name: JObject<'_> = env
-        .get_field(&info, JNIString::new(VERSION_NAME_FIELD), jni_sig!("Ljava/lang/String;"))?
+        .get_field(
+            &info,
+            JNIString::new(VERSION_NAME_FIELD),
+            jni_sig!("Ljava/lang/String;"),
+        )?
         .l()?;
     let version = required_string(env, version_name)?;
     let build_number = version_code(env, &info)?;
@@ -547,7 +566,7 @@ impl Backend for NativeBackend {
     }
 
     fn app_info(&self) -> BackendFuture<'_, Result<AppInfo, DeviceInfoError>> {
-        Box::pin(ready(attached(|env, context| app_info(env, context))))
+        Box::pin(ready(attached(app_info)))
     }
 }
 

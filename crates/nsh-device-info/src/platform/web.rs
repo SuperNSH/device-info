@@ -45,7 +45,10 @@ fn first_two_numbers(text: &str) -> (u16, u16) {
     for character in text.chars() {
         match character.to_digit(10) {
             Some(digit) => {
-                run = run.saturating_mul(10).saturating_add(u64::from(digit)).min(cap);
+                run = run
+                    .saturating_mul(10)
+                    .saturating_add(u64::from(digit))
+                    .min(cap);
                 in_run = true;
             }
             None if in_run => {
@@ -73,9 +76,17 @@ fn os_version_from_platform_version(version: Option<&str>) -> OsVersion {
     match version.map(str::trim).filter(|value| !value.is_empty()) {
         Some(value) => {
             let (major, minor) = first_two_numbers(value);
-            OsVersion { major, minor, full: Some(value.to_owned()) }
+            OsVersion {
+                major,
+                minor,
+                full: Some(value.to_owned()),
+            }
         }
-        None => OsVersion { major: 0, minor: 0, full: None },
+        None => OsVersion {
+            major: 0,
+            minor: 0,
+            full: None,
+        },
     }
 }
 
@@ -85,9 +96,17 @@ fn os_version_from_user_agent(user_agent: &str) -> OsVersion {
     match os_token(user_agent) {
         Some(token) => {
             let (major, minor) = first_two_numbers(token);
-            OsVersion { major, minor, full: Some(token.to_owned()) }
+            OsVersion {
+                major,
+                minor,
+                full: Some(token.to_owned()),
+            }
         }
-        None => OsVersion { major: 0, minor: 0, full: None },
+        None => OsVersion {
+            major: 0,
+            minor: 0,
+            full: None,
+        },
     }
 }
 
@@ -133,7 +152,9 @@ mod browser {
 
     /// `object.name` as a JS string; a missing or non-string value is absent data, not a failure.
     fn string_property(object: &JsValue, name: &str) -> Option<String> {
-        Reflect::get(object, &JsValue::from_str(name)).ok()?.as_string()
+        Reflect::get(object, &JsValue::from_str(name))
+            .ok()?
+            .as_string()
     }
 
     /// `navigator.userAgent`, the OS fallback when UA-CH is missing.
@@ -212,19 +233,54 @@ mod tests {
     #[test]
     fn platform_version_parses_major_and_minor() {
         let parsed = os_version_from_platform_version(Some("15.0.0"));
-        assert_eq!(parsed, OsVersion { major: 15, minor: 0, full: Some("15.0.0".to_owned()) });
+        assert_eq!(
+            parsed,
+            OsVersion {
+                major: 15,
+                minor: 0,
+                full: Some("15.0.0".to_owned())
+            }
+        );
         let parsed = os_version_from_platform_version(Some("10.15.7"));
-        assert_eq!(parsed, OsVersion { major: 10, minor: 15, full: Some("10.15.7".to_owned()) });
+        assert_eq!(
+            parsed,
+            OsVersion {
+                major: 10,
+                minor: 15,
+                full: Some("10.15.7".to_owned())
+            }
+        );
     }
 
     #[test]
     fn platform_version_reduced_or_absent_is_zeros() {
         let parsed = os_version_from_platform_version(None);
-        assert_eq!(parsed, OsVersion { major: 0, minor: 0, full: None });
+        assert_eq!(
+            parsed,
+            OsVersion {
+                major: 0,
+                minor: 0,
+                full: None
+            }
+        );
         let parsed = os_version_from_platform_version(Some(""));
-        assert_eq!(parsed, OsVersion { major: 0, minor: 0, full: None });
+        assert_eq!(
+            parsed,
+            OsVersion {
+                major: 0,
+                minor: 0,
+                full: None
+            }
+        );
         let parsed = os_version_from_platform_version(Some("   "));
-        assert_eq!(parsed, OsVersion { major: 0, minor: 0, full: None });
+        assert_eq!(
+            parsed,
+            OsVersion {
+                major: 0,
+                minor: 0,
+                full: None
+            }
+        );
     }
 
     #[test]
@@ -238,7 +294,14 @@ mod tests {
     #[test]
     fn platform_version_keeps_an_unparseable_string() {
         let parsed = os_version_from_platform_version(Some("Unknown"));
-        assert_eq!(parsed, OsVersion { major: 0, minor: 0, full: Some("Unknown".to_owned()) });
+        assert_eq!(
+            parsed,
+            OsVersion {
+                major: 0,
+                minor: 0,
+                full: Some("Unknown".to_owned())
+            }
+        );
     }
 
     #[test]
@@ -253,7 +316,10 @@ mod tests {
         let parsed = os_version_from_user_agent(agent);
         assert_eq!(parsed.major, 17);
         assert_eq!(parsed.minor, 5);
-        assert_eq!(parsed.full.as_deref(), Some("CPU iPhone OS 17_5_1 like Mac OS X"));
+        assert_eq!(
+            parsed.full.as_deref(),
+            Some("CPU iPhone OS 17_5_1 like Mac OS X")
+        );
 
         let agent = "Mozilla/5.0 (iPad; CPU OS 16_6 like Mac OS X) Safari/604.1";
         let parsed = os_version_from_user_agent(agent);
@@ -279,18 +345,50 @@ mod tests {
         // Linux agents carry no kernel version, so they are "nothing at all".
         let agent = "Mozilla/5.0 (X11; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0";
         let parsed = os_version_from_user_agent(agent);
-        assert_eq!(parsed, OsVersion { major: 0, minor: 0, full: None });
+        assert_eq!(
+            parsed,
+            OsVersion {
+                major: 0,
+                minor: 0,
+                full: None
+            }
+        );
         let parsed = os_version_from_user_agent("curl/8.4.0");
-        assert_eq!(parsed, OsVersion { major: 0, minor: 0, full: None });
+        assert_eq!(
+            parsed,
+            OsVersion {
+                major: 0,
+                minor: 0,
+                full: None
+            }
+        );
     }
 
     #[test]
     fn model_extraction_keeps_the_raw_string() {
         let model = model_from_user_agent_data(Some("SM-S928B"));
-        assert_eq!(model, Model { identifier: Some("SM-S928B".to_owned()), name: None });
+        assert_eq!(
+            model,
+            Model {
+                identifier: Some("SM-S928B".to_owned()),
+                name: None
+            }
+        );
         let model = model_from_user_agent_data(None);
-        assert_eq!(model, Model { identifier: None, name: None });
+        assert_eq!(
+            model,
+            Model {
+                identifier: None,
+                name: None
+            }
+        );
         let model = model_from_user_agent_data(Some("  "));
-        assert_eq!(model, Model { identifier: None, name: None });
+        assert_eq!(
+            model,
+            Model {
+                identifier: None,
+                name: None
+            }
+        );
     }
 }

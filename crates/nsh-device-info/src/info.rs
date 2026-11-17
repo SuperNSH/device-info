@@ -128,7 +128,11 @@ mod tests {
 
         let unnumbered = from_os_version(&os_info::Version::Semantic(26, 0, 1));
         assert_eq!(
-            (unnumbered.major, unnumbered.minor, unnumbered.full.as_deref()),
+            (
+                unnumbered.major,
+                unnumbered.minor,
+                unnumbered.full.as_deref()
+            ),
             (26, 0, Some("26.0.1"))
         );
 

@@ -34,7 +34,10 @@ fn identifier_from(content: &str) -> Option<String> {
 
 /// One short read of a model source: missing, unreadable, or blank is `None`, not an error.
 fn read_identifier(path: &str) -> Option<String> {
-    fs::read_to_string(path).ok().as_deref().and_then(identifier_from)
+    fs::read_to_string(path)
+        .ok()
+        .as_deref()
+        .and_then(identifier_from)
 }
 
 /// DMI wins when it has a model; Linux reports no marketing name to fill `Model::name`.
@@ -77,8 +80,14 @@ mod tests {
 
     #[test]
     fn trailing_nuls_and_whitespace_are_stripped_from_the_identifier() {
-        assert_eq!(identifier_from("Mac15,6\n\u{0}").as_deref(), Some("Mac15,6"));
-        assert_eq!(identifier_from("  Mac15,6\n\u{0}").as_deref(), Some("  Mac15,6"));
+        assert_eq!(
+            identifier_from("Mac15,6\n\u{0}").as_deref(),
+            Some("Mac15,6")
+        );
+        assert_eq!(
+            identifier_from("  Mac15,6\n\u{0}").as_deref(),
+            Some("  Mac15,6")
+        );
         assert_eq!(
             identifier_from("Raspberry Pi 4 Model B Rev 1.4  \n").as_deref(),
             Some("Raspberry Pi 4 Model B Rev 1.4")

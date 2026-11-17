@@ -97,8 +97,14 @@ mod tests {
     fn every_kind_maps_to_its_message() {
         // Exhaustive: adding a kind without a message fails here. Display shows only the message.
         for (kind, message) in [
-            (ErrorKind::NotAvailable, "Device information is not available on this platform."),
-            (ErrorKind::Backend, "The platform's device information service failed."),
+            (
+                ErrorKind::NotAvailable,
+                "Device information is not available on this platform.",
+            ),
+            (
+                ErrorKind::Backend,
+                "The platform's device information service failed.",
+            ),
         ] {
             assert_eq!(kind.message(), message);
             assert_eq!(DeviceInfoError::new(kind).to_string(), message);
