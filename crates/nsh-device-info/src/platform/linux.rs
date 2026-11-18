@@ -24,7 +24,7 @@ const DEVICE_TREE_MODEL: &str = "/proc/device-tree/model";
 /// Firmware pads the model string with trailing NUL bytes and a newline, so both are trimmed;
 /// content that trims to nothing carries no identifier.
 fn identifier_from(content: &str) -> Option<String> {
-    let trimmed = content.trim_end_matches(|c| c == '\0' || c.is_whitespace());
+    let trimmed = content.trim_end_matches(|c: char| c == '\0' || c.is_whitespace());
     if trimmed.is_empty() {
         None
     } else {
