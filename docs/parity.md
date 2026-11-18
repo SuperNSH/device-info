@@ -2,9 +2,9 @@
 
 | Capability | Status | Evidence |
 |---|---|---|
-| Crate builds and CI passes | Unverified | every source is in the checkout — the crate, its platform bridges and the TypeScript package — and the gates are wired in `.github/workflows/ci.yml`; no run has passed, so this stays unverified until the next CI run on `master` |
+| Crate builds and CI passes | Done | CI run https://github.com/SuperNSH/device-info/actions/runs/44381413043 on `master` (2b7b037) is green in all seven jobs: `rust` (fmt, clippy `-D warnings`, `cargo test --all-targets`), `typescript` (`nsh check`, `nsh test`), and the cross-check clippy of the crate for aarch64-apple-ios, aarch64-apple-ios-sim, aarch64-linux-android, wasm32-unknown-unknown and x86_64-pc-windows-msvc; the Windows entry also runs `cargo test`. The Apple, Android and web bridges are compiled and linted there but never executed |
 | Device info API | Done | `the_facade_passes_through_to_its_backend`, `each_call_reads_the_backend_again`, `every_kind_maps_to_its_stable_code` |
-| Platform implementations | Partial | Linux and the shared helpers run in CI; the Apple, Android, Windows and web bridges are Platform only below |
+| Platform implementations | Partial | Linux and the shared helpers run their tests in CI; the Windows bridge runs its inline tests on the Windows runner; the Apple, Android and web bridges are compile and clippy checked only (run `44381413043`), and executing them needs a device, simulator or browser that no CI job provides, so they stay Platform only below |
 | Device tests | Done | eight of the ten canonical tests in `crates/nsh-device-info/tests/facade.rs` and `tests/errors.rs`, the same eight sentence names in `packages/nsh-device-info/tests/`; #3 `a_simulator_reports_a_simulator_model` and #4 `the_release_keys_name_the_right_fields` live inline in the platform files, and the TS side has no #4 test |
 | Status page | Done | `site/index.html`, published by `.github/workflows/pages.yml` |
 

@@ -6,7 +6,7 @@ Part of the Native Shell (NSH) capability set. Same layout as the other SuperNSH
 
 ## Status
 
-**Implemented, not yet verified.** The Rust crate and the TypeScript package are in the repo and the CI gates are wired; no run has passed yet, so nothing here claims CI green. [docs/parity.md](docs/parity.md) tracks what is done.
+**Implemented; CI green.** Run https://github.com/SuperNSH/device-info/actions/runs/44381413043 on `master` passes all seven jobs: Rust fmt, clippy and tests, the TypeScript `nsh check` and `nsh test`, and clippy cross-checks for iOS, iOS simulator, Android, wasm and Windows (with `cargo test` on Windows). The Apple, Android and web bridges are compiled but not executed anywhere, since that needs a device, simulator or browser. App info on web and desktop Linux is a documented gap. [docs/parity.md](docs/parity.md) tracks each row.
 
 ## Approach
 
