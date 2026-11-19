@@ -6,7 +6,7 @@ Part of the Native Shell (NSH) capability set. Same layout as the other SuperNSH
 
 ## Status
 
-**Implemented; CI green.** Run https://github.com/SuperNSH/device-info/actions/runs/44381413043 on `master` passes all seven jobs: Rust fmt, clippy and tests, the TypeScript `nsh check` and `nsh test`, and clippy cross-checks for iOS, iOS simulator, Android, wasm and Windows (with `cargo test` on Windows). The Apple, Android and web bridges are compiled but not executed anywhere, since that needs a device, simulator or browser. App info on web and desktop Linux is a documented gap. [docs/parity.md](docs/parity.md) tracks each row.
+**Implemented; CI green.** Run https://github.com/SuperNSH/device-info/actions/runs/44381413043 on `master` passes all seven jobs: Rust fmt, clippy and tests, the TypeScript `nsh check` and `nsh test`, and clippy cross-checks for iOS, iOS simulator, Android, wasm and Windows (with `cargo test` on Windows). The Apple, Android and web bridges are compiled but not executed anywhere, since that needs a device, simulator or browser. The crate has no app info on web and desktop Linux (a documented gap); the TSX package fills it from the runtime's `appInfo()`. That fallback and its tests (`packages/nsh-device-info/tests/build.test.ts`) postdate the run above, so they are unverified until CI runs them. [docs/parity.md](docs/parity.md) tracks each row.
 
 ## Approach
 

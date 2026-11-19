@@ -1,6 +1,6 @@
 import { mount, Text, View } from "nsh";
 
-// NSH 0.4.0's entry resolution requires an App.tsx beside nsh.json for `nsh check` and `nsh test`.
+// NSH's entry resolution requires an App.tsx beside nsh.json for `nsh check` and `nsh test`.
 // This package is a library with no demo, so the entry stays as empty as the toolchain allows.
 function App() {
   return (

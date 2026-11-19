@@ -48,12 +48,13 @@ device_info_plus documents each cached answer as "This information does not chan
 
 That is every failure the library can meet. There are no arguments to refuse (no invalid-argument code), no system prompt to dismiss (no cancel code) and nothing slow enough to time out — each call is one platform read. The same two codes and the same English messages appear on the TypeScript side; the platform status rides along when the platform reports one.
 
-## App info on web and desktop Linux: named gaps
+## App info on web and desktop Linux
 
-- Web: the browser has no bundle. package_info_plus answers from a `version.json` its build generates and the app fetches; NSH 0.4.0 generates no such artifact (0.5.0's TypeScript `appInfo()` reads build metadata on the web; the Rust crate does not use it yet). `app_info` resolves `ERR_DEVICE_INFO_NOT_AVAILABLE`; an app ships its own constants today. A later version needs the NSH build to emit a version artifact, and a reader for it.
-- Desktop Linux: no bundle, and no package manager owns an exe in `/usr/local`. A later version needs a build-time source — NSH injecting the app's metadata at packaging, or parsing the `.desktop` file the installer ships.
+- Rust crate: the browser has no bundle, and desktop Linux has none an exe in `/usr/local` could read. The crate has no source there and resolves `ERR_DEVICE_INFO_NOT_AVAILABLE`. NSH 0.6.0 gives Rust no build metadata either: `appInfo()` exists only in the JavaScript runtime (`crates/nsh-js/src/env.rs`, `crates/nsh-bundler/src/bundle.rs`), and `nsh-core` has no counterpart.
+- TypeScript package: `rustBackend()` falls back to that `appInfo()` (`nsh.json`'s `id`, `name`, `version` and `build`) on web and desktop Linux when the crate answers `ERR_DEVICE_INFO_NOT_AVAILABLE`, so a TSX app gets `appName`, `packageName`, `version` and `buildNumber` there; `buildSignature` and `installerStore` stay null. A backend failure is never hidden by the fallback. Tests: `tests/build.test.ts`, unrun until CI (AGENTS.md forbids local runs).
+- A Rust-only app on web or Linux still ships its own constants until NSH exposes build metadata to Rust.
 
-Model and OS version work on both; only app info is the gap. Both rows are Partial in [parity.md](parity.md).
+Model and OS version work on both; only the crate's app info is the gap. The two rows are Partial in [parity.md](parity.md).
 
 ## Versions
 

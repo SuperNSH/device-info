@@ -20,7 +20,7 @@ The library reports device model, OS version and app version for Native Shell ap
 
 | Kind | Code | Message | When |
 |---|---|---|---|
-| `NotAvailable` | `ERR_DEVICE_INFO_NOT_AVAILABLE` | Device information is not available on this platform. | The target has no source for the answer: any target beyond the six, app info on web and desktop Linux. |
+| `NotAvailable` | `ERR_DEVICE_INFO_NOT_AVAILABLE` | Device information is not available on this platform. | The target has no source for the answer: any target beyond the six, the Rust crate's app info on web and desktop Linux (the TSX package answers from build metadata there). |
 | `Backend` | `ERR_DEVICE_INFO_BACKEND` | The platform's device information service failed. | The source exists and the read failed. |
 
 `DeviceInfoError` carries the kind, the code and an optional platform status (`status()`; `with_status(i64)` sets it), kept when the platform reports one. Display shows the message and nothing else: no reason text, no user data. A TypeScript call rejects with the same code and message.

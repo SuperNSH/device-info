@@ -1,8 +1,8 @@
 //! Linux: the DMI product name is the device model, the device tree's `model` on ARM boards,
 //! and `os_info` the OS version.
 //!
-//! Desktop Linux has no uniform per-app metadata an installed binary can read, so `app_info`
-//! answers `ERR_DEVICE_INFO_NOT_AVAILABLE`. A source that exists but cannot be read is the
+//! Desktop Linux has no uniform per-app metadata an installed binary can read, and NSH 0.6.0 gives
+//! Rust none, so `app_info` answers `ERR_DEVICE_INFO_NOT_AVAILABLE`. A source that exists but cannot be read is the
 //! `None` answer, not an error: unprivileged containers are routinely denied DMI reads.
 
 use std::fs;

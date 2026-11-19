@@ -34,6 +34,7 @@ export class DeviceInfo {
 }
 
 export { type DeviceInfoBackend } from "./backend";
+export { appInfoFromBuild, appInfoWithBuildFallback, type BuildInfo } from "./build";
 export { DeviceInfoError, asDeviceInfoError, deviceInfoError, type DeviceInfoErrorCode } from "./errors";
 export { memoryBackend, type MemoryBackend, type MemoryDeviceInfoConfig } from "./memory";
 export { rustBackend } from "./rust";
