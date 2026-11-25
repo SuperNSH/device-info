@@ -12,7 +12,7 @@ In the app's directory:
 nsh add nsh-device-info
 ```
 
-`nsh add` needs NSH 0.7.0 or later: the 0.6.x releases do not have it. In a Rust app, `cargo add nsh-device-info` works with any of them.
+Needs NSH 0.7.1 or later.
 
 TSX imports `nsh-device-info`, with `nsh-device-info/rust` and `nsh-device-info/memory` alongside it.
 
