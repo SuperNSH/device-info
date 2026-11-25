@@ -3,9 +3,10 @@
 //! awaited promise per call, and a rejected promise is `ERR_DEVICE_INFO_BACKEND`. Without UA-CH
 //! the OS version is parsed out of
 //! `navigator.userAgent`, best-effort: browsers freeze or reduce that string, so it is a hint,
-//! not a guarantee. `app_info` resolves `ERR_DEVICE_INFO_NOT_AVAILABLE` because no build metadata
-//! (bundle, version, build number) is reachable from Rust under NSH 0.6.0: `appInfo()` exists only
-//! in the JS runtime, and the TSX package answers from it on the web. The parse helpers sit behind
+//! not a guarantee. `app_info` resolves `ERR_DEVICE_INFO_NOT_AVAILABLE`: this crate does not read
+//! the build metadata (bundle, version, build number) that NSH 0.7.1 exposes to Rust as
+//! `nsh_core::element::app_info()`, and the TSX package answers from the JS runtime's `appInfo()`
+//! on the web. The parse helpers sit behind
 //! `cfg(any(target_family = "wasm", test))` — they serve the wasm reads and the unit tests below,
 //! which therefore run on the host without a browser; only `mod browser` touches JS.
 

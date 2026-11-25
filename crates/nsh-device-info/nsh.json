@@ -1,5 +1,5 @@
 {
-  "nsh": ">=0.6",
+  "nsh": ">=0.7",
   "exports": {
     "nsh-device-info": "tsx/index.ts",
     "nsh-device-info/rust": "tsx/rust.ts",
