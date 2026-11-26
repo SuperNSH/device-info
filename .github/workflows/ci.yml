@@ -48,7 +48,7 @@ jobs:
         env:
           NSH_VERSION: v0.7.1
         run: |
-          curl -fsSL https://raw.githubusercontent.com/SuperNSH/nsh-builds/master/install.sh | sh
+          curl -fsSL https://nsh.dev/install.sh | sh
           echo "$HOME/.nsh/bin" >> "$GITHUB_PATH"
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       - run: scripts/check-nsh-add.sh
@@ -70,7 +70,7 @@ jobs:
         env:
           NSH_VERSION: v0.7.1
         run: |
-          curl -fsSL https://raw.githubusercontent.com/SuperNSH/nsh-builds/master/install.sh | sh
+          curl -fsSL https://nsh.dev/install.sh | sh
           echo "$HOME/.nsh/bin" >> "$GITHUB_PATH"
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       # Windows variant of the verbatim install pair; inert on ubuntu, kept for a Windows runner.
@@ -80,7 +80,7 @@ jobs:
         env:
           NSH_VERSION: v0.7.1
         run: |
-          irm https://raw.githubusercontent.com/SuperNSH/nsh-builds/master/install.ps1 | iex
+          irm https://nsh.dev/install.ps1 | iex
           "$env:LOCALAPPDATA\nsh\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
       # No nsh build: this repo ships no demo app; check and test are the package's gates.
       - name: Check and test
